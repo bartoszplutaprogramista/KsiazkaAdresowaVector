@@ -12,6 +12,12 @@ struct User {
     string name, surname, phoneNumber, eMail, address;
 };
 
+//int signUp (vector <User> &recipients);
+
+//void signUpLoginPassword (vector <string> &login, vector <string> &password);
+
+vector <string> signUpLoginPassword (vector <string> &login, vector <string> &password);
+
 vector <User> splitData(vector <string> helpToLoad);
 
 vector <User> loadDataFromFile();
@@ -49,16 +55,41 @@ int main() {
 
     recipients = loadDataFromFile();
 
+    vector <string> login;
+    vector <string> password;
+
     while(1) {
         system("cls");
         cout << "MENU GLOWNE" << endl;
+        cout << "1. Logowanie" << endl;
+        cout << "2. Rejestracja" << endl;
+        cout << "3. Zamknij program" << endl;
+        cin >> choice;
+
+        if(choice == '1') {
+//            signIn(recipients);
+        } else if (choice == '2') {
+//            signUpLoginPassword(login, password);
+            signUpLoginPassword(login, password);
+        } else if (choice == '3') {
+            exit(0);
+        }
+    }
+    return 0;
+}
+
+/*
+int signUp (vector <User> &recipients){
+    while(1) {
+        char choice;
+        system("cls");
         cout << "1. Dodaj adresata" << endl;
         cout << "2. Wyszukaj po imieniu" << endl;
         cout << "3. Wyszukaj po nazwisku" << endl;
         cout << "4. Wyswietl wszystkich adresatow" << endl;
         cout << "5. Usun adresata" << endl;
         cout << "6. Edytuj adresata" << endl;
-        cout << "9. Zakoncz program" << endl;
+        cout << "9. Powrot do MENU" << endl;
 
         cin >> choice;
 
@@ -75,10 +106,51 @@ int main() {
         } else if (choice == '6') {
             editRecipient(recipients);
         } else if (choice == '9') {
-            exit(0);
+            return 0;
         }
     }
-    return 0;
+}
+*/
+
+vector <string> signUpLoginPassword (vector <string> &login, vector <string> &password){
+//        vector <string> login;
+        string loginUser;
+//        vector <string> password;
+        string loginPassword;
+        int sizeOfLogin = login.size();
+        cout << "size login przed wejsciem: " << sizeOfLogin << endl;
+        cout << "1. Podaj login: " << endl;
+        cin >> loginUser;
+        if (sizeOfLogin==0){
+            login.push_back(loginUser);
+            sizeOfLogin = login.size();
+            cout << "Login z vectora wynosi: " << login[0] << endl;
+            cout << "size login: " << sizeOfLogin << endl;
+        }
+        else {
+            cout << "WSZEDLEM DO TEGO ELSA" << endl;
+            int i=0;
+            while (i<sizeOfLogin){
+                if (loginUser==login[i]){
+                cout << "Taki login juz istnieje wybierz inny!" << endl;
+                signUpLoginPassword(login, password);
+                } else if ((loginUser!=login[i])&&(i==sizeOfLogin-1)){
+                    login.push_back(loginUser);
+                    cout << "Login z vectora po wejsciu do ifa wynosi: " << login[1] << endl;
+                    getch();
+                }
+                i++;
+            }
+        }
+        sizeOfLogin = login.size();
+        cout << "size login: " << sizeOfLogin << endl;
+
+        cout << "2. Podaj haslo: " << endl;
+        cin >> loginPassword;
+        password.push_back(loginPassword);
+        cout << "Login z vectora wynosi: " << password[0] << endl;
+        getch();
+        return login;
 }
 
 vector <User> splitData(vector <string> helpToLoad) {
