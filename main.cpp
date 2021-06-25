@@ -12,11 +12,15 @@ struct User {
     string name, surname, phoneNumber, eMail, address;
 };
 
+struct LoginPassword {
+    string  login, password;
+};
+
 //int signUp (vector <User> &recipients);
 
 //void signUpLoginPassword (vector <string> &login, vector <string> &password);
 
-vector <string> signUpLoginPassword (vector <string> &login, vector <string> &password);
+void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec);
 
 vector <User> splitData(vector <string> helpToLoad);
 
@@ -55,8 +59,7 @@ int main() {
 
     recipients = loadDataFromFile();
 
-    vector <string> login;
-    vector <string> password;
+    vector <LoginPassword> loginAndPasswordVec;
 
     while(1) {
         system("cls");
@@ -70,7 +73,7 @@ int main() {
 //            signIn(recipients);
         } else if (choice == '2') {
 //            signUpLoginPassword(login, password);
-            signUpLoginPassword(login, password);
+            signUpLoginPassword(loginAndPasswordVec);
         } else if (choice == '3') {
             exit(0);
         }
@@ -112,45 +115,42 @@ int signUp (vector <User> &recipients){
 }
 */
 
-vector <string> signUpLoginPassword (vector <string> &login, vector <string> &password){
-//        vector <string> login;
-        string loginUser;
-//        vector <string> password;
-        string loginPassword;
-        int sizeOfLogin = login.size();
-        cout << "size login przed wejsciem: " << sizeOfLogin << endl;
+void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
+//        string login;
+//        string password;
+        LoginPassword dataOfUsers;
+        int sizeOfLoginAndPasswordVec = loginAndPasswordVec.size();
+        cout << "size login przed wejsciem: " << sizeOfLoginAndPasswordVec << endl;
         cout << "1. Podaj login: " << endl;
-        cin >> loginUser;
-        if (sizeOfLogin==0){
-            login.push_back(loginUser);
-            sizeOfLogin = login.size();
-            cout << "Login z vectora wynosi: " << login[0] << endl;
-            cout << "size login: " << sizeOfLogin << endl;
+        cin >> dataOfUsers.login;
+//        dataOfUsers.login = login;
+
+        cout << "2. Podaj haslo: " << endl;
+        cin >> dataOfUsers.password;
+//        dataOfUsers.password = password;
+        if (sizeOfLoginAndPasswordVec==0){
+            loginAndPasswordVec.push_back(dataOfUsers);
+            sizeOfLoginAndPasswordVec = loginAndPasswordVec.size();
+            cout << "Login z vectora wynosi: " << loginAndPasswordVec[0].login << endl;
+            cout << "size login: " << sizeOfLoginAndPasswordVec << endl;
         }
         else {
             cout << "WSZEDLEM DO TEGO ELSA" << endl;
             int i=0;
-            while (i<sizeOfLogin){
-                if (loginUser==login[i]){
+            while (i<sizeOfLoginAndPasswordVec){
+                if (dataOfUsers.login==loginAndPasswordVec[i].login){
                 cout << "Taki login juz istnieje wybierz inny!" << endl;
-                signUpLoginPassword(login, password);
-                } else if ((loginUser!=login[i])&&(i==sizeOfLogin-1)){
-                    login.push_back(loginUser);
-                    cout << "Login z vectora po wejsciu do ifa wynosi: " << login[1] << endl;
+                signUpLoginPassword(loginAndPasswordVec);
+                } else if ((dataOfUsers.login!=loginAndPasswordVec[i].login)&&(i==sizeOfLoginAndPasswordVec-1)){
+                    loginAndPasswordVec.push_back(dataOfUsers);
+                    cout << "Login z vectora po wejsciu do ifa wynosi: " << loginAndPasswordVec[1].login << endl;
                     getch();
                 }
                 i++;
             }
         }
-        sizeOfLogin = login.size();
-        cout << "size login: " << sizeOfLogin << endl;
-
-        cout << "2. Podaj haslo: " << endl;
-        cin >> loginPassword;
-        password.push_back(loginPassword);
-        cout << "Login z vectora wynosi: " << password[0] << endl;
-        getch();
-        return login;
+//        sizeOfLogin = login.size();
+//        cout << "size login: " << sizeOfLogin << endl;
 }
 
 vector <User> splitData(vector <string> helpToLoad) {
