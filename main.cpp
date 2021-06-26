@@ -13,10 +13,11 @@ struct User {
 };
 
 struct LoginPassword {
+    int userID;
     string  login, password;
 };
 
-//int signUp (vector <User> &recipients);
+int signIn (vector <User> &recipients, vector <LoginPassword> loginAndPasswordVec);
 
 //void signUpLoginPassword (vector <string> &login, vector <string> &password);
 
@@ -70,7 +71,7 @@ int main() {
         cin >> choice;
 
         if(choice == '1') {
-//            signIn(recipients);
+            signIn(recipients, loginAndPasswordVec);
         } else if (choice == '2') {
 //            signUpLoginPassword(login, password);
             signUpLoginPassword(loginAndPasswordVec);
@@ -81,39 +82,59 @@ int main() {
     return 0;
 }
 
-/*
-int signUp (vector <User> &recipients){
-    while(1) {
-        char choice;
-        system("cls");
-        cout << "1. Dodaj adresata" << endl;
-        cout << "2. Wyszukaj po imieniu" << endl;
-        cout << "3. Wyszukaj po nazwisku" << endl;
-        cout << "4. Wyswietl wszystkich adresatow" << endl;
-        cout << "5. Usun adresata" << endl;
-        cout << "6. Edytuj adresata" << endl;
-        cout << "9. Powrot do MENU" << endl;
 
-        cin >> choice;
+int signIn (vector <User> &recipients, vector <LoginPassword> loginAndPasswordVec){
+    string login;
+    string password;
+    cout << "Wprowadz login: " << endl;
+    cin >> login;
+    cout << "Wprowadz login: " << endl;
+    cin >> password;
+    int i=0;
+    int rozmiar = loginAndPasswordVec.size();
+    while (i<rozmiar){
+        if ((login == loginAndPasswordVec[i].login) && (password == loginAndPasswordVec[i].password)){
+            cout << "Istnieje uzytkownik o takim loginie i hasle. Zalogowano pomyslnie!" << endl;
+            getch();
+            while(1) {
+                char choice;
+                system("cls");
+                cout << "1. Dodaj adresata" << endl;
+                cout << "2. Wyszukaj po imieniu" << endl;
+                cout << "3. Wyszukaj po nazwisku" << endl;
+                cout << "4. Wyswietl wszystkich adresatow" << endl;
+                cout << "5. Usun adresata" << endl;
+                cout << "6. Edytuj adresata" << endl;
+                cout << "9. Powrot do MENU" << endl;
 
-        if(choice == '1') {
-            saveAllData(recipients);
-        } else if (choice == '2') {
-            searchByName(recipients);
-        } else if (choice == '3') {
-            searchBySurname(recipients);
-        } else if (choice == '4') {
-            displayAll(recipients);
-        } else if (choice == '5') {
-            removeRecipient(recipients);
-        } else if (choice == '6') {
-            editRecipient(recipients);
-        } else if (choice == '9') {
-            return 0;
+                cin >> choice;
+
+                if(choice == '1') {
+                    saveAllData(recipients);
+                } else if (choice == '2') {
+                    searchByName(recipients);
+                } else if (choice == '3') {
+                    searchBySurname(recipients);
+                } else if (choice == '4') {
+                    displayAll(recipients);
+                } else if (choice == '5') {
+                    removeRecipient(recipients);
+                } else if (choice == '6') {
+                    editRecipient(recipients);
+                } else if (choice == '9') {
+                    return 1;
+                }
+            }
         }
+        else {
+            cout << "Nieprawidlowy login lub haslo" << endl;
+            getch();
+            signIn(recipients, loginAndPasswordVec);
+        }
+        i++;
     }
+    return 0;
 }
-*/
 
 void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
 //        string login;
@@ -140,6 +161,9 @@ void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
         cout << "2. Podaj haslo: " << endl;
         cin >> dataOfUsers.password;
 //        dataOfUsers.password = password;
+        dataOfUsers.userID = sizeOfLoginAndPasswordVec + 1;
+        cout << "dataOfUsers wynosi: " << dataOfUsers.userID << endl;
+        getch();
         if (sizeOfLoginAndPasswordVec==0){
             loginAndPasswordVec.push_back(dataOfUsers);
             sizeOfLoginAndPasswordVec = loginAndPasswordVec.size();
@@ -164,6 +188,7 @@ void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
             while (j<rozmiar){
                 cout << "login " << j << " wynosi: " << loginAndPasswordVec[j].login << endl;
                 cout << "haslo " << j << " wynosi: " << loginAndPasswordVec[j].password << endl;
+                cout << "idUsera " << j << " wynosi: " << loginAndPasswordVec[j].userID << endl;
                 j++;
             }
             getch();
