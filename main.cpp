@@ -123,6 +123,18 @@ void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
         cout << "size login przed wejsciem: " << sizeOfLoginAndPasswordVec << endl;
         cout << "1. Podaj login: " << endl;
         cin >> dataOfUsers.login;
+
+        int i=0;
+        while (i<sizeOfLoginAndPasswordVec){
+            while (dataOfUsers.login==loginAndPasswordVec[i].login){
+            cout << "Taki login juz istnieje wybierz inny!" << endl;
+//            signUpLoginPassword(loginAndPasswordVec);
+            cout << "1. Podaj login: " << endl;
+            cin >> dataOfUsers.login;
+            }
+            i++;
+        }
+
 //        dataOfUsers.login = login;
 
         cout << "2. Podaj haslo: " << endl;
@@ -136,12 +148,9 @@ void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
         }
         else {
             cout << "WSZEDLEM DO TEGO ELSA" << endl;
-            int i=0;
+            i=0;
             while (i<sizeOfLoginAndPasswordVec){
-                if (dataOfUsers.login==loginAndPasswordVec[i].login){
-                cout << "Taki login juz istnieje wybierz inny!" << endl;
-                signUpLoginPassword(loginAndPasswordVec);
-                } else if ((dataOfUsers.login!=loginAndPasswordVec[i].login)&&(i==sizeOfLoginAndPasswordVec-1)){
+                if ((dataOfUsers.login!=loginAndPasswordVec[i].login)&&(i==sizeOfLoginAndPasswordVec-1)){
                     loginAndPasswordVec.push_back(dataOfUsers);
                     cout << "Login z vectora po wejsciu do ifa wynosi: " << loginAndPasswordVec[1].login << endl;
                     getch();
@@ -149,8 +158,16 @@ void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
                 i++;
             }
         }
-//        sizeOfLogin = login.size();
-//        cout << "size login: " << sizeOfLogin << endl;
+        int j=0;
+        int rozmiar = loginAndPasswordVec.size();
+        if (rozmiar == 4){
+            while (j<rozmiar){
+                cout << "login " << j << " wynosi: " << loginAndPasswordVec[j].login << endl;
+                cout << "haslo " << j << " wynosi: " << loginAndPasswordVec[j].password << endl;
+                j++;
+            }
+            getch();
+        }
 }
 
 vector <User> splitData(vector <string> helpToLoad) {
