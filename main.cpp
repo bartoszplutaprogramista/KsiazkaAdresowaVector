@@ -43,7 +43,7 @@ int searchByName (vector <User> recipients);
 
 int searchBySurname (vector <User> recipients);
 
-void displayAll(vector <User> recipients);
+void displayAll(vector <User> recipients, int extremeVariable);
 
 void saveDataToATextFile(vector <User> recipients);
 
@@ -57,9 +57,9 @@ void saveeMailToATextFile (vector <User> &recipients, int i, int enteredID);
 
 void saveAddressToATextFile (vector <User> &recipients, int i, int enteredID);
 
-int editRecipient(vector <User> &recipients);
+int editRecipient(vector <User> &recipients, int extremeVariable);
 
-int removeRecipient(vector <User> &recipients);
+int removeRecipient(vector <User> &recipients, int extremeVariable);
 
 int main() {
     vector <LoginPassword> loginAndPasswordVec;
@@ -208,11 +208,11 @@ int signIn (vector <User> &recipients, vector <LoginPassword> &loginAndPasswordV
                 } else if (choice == '3') {
                     searchBySurname(recipients);
                 } else if (choice == '4') {
-                    displayAll(recipients);
+                    displayAll(recipients, extremeVariable);
                 } else if (choice == '5') {
-                    removeRecipient(recipients);
+                    removeRecipient(recipients, extremeVariable);
                 } else if (choice == '6') {
-                    editRecipient(recipients);
+                    editRecipient(recipients, extremeVariable);
                 } else if (choice == '7') {
                     changePassword(loginAndPasswordVec, i);
                 } else if (choice == '9') {
@@ -493,13 +493,19 @@ int searchBySurname (vector <User> recipients) {
     }
 }
 
-void displayAll(vector <User> recipients) {
+void displayAll(vector <User> recipients, int extremeVariable) {
     system("cls");
     int sizeOfVector = recipients.size();
-    for (int i=0; i<sizeOfVector; i++) {
-        cout << "Dane przyjaciela: " << endl;
-        displayData(recipients, i);
-        cout << endl;
+    int i=0;
+//    while ((recipients[extremeVariable-1].userIDUser == extremeVariable)&&(i<sizeOfVector)){
+    while (i<sizeOfVector) {
+        if (recipients[i].userIDUser == extremeVariable){
+            cout << "Dane przyjaciela: " << endl;
+ //           displayData(recipients, i);
+            displayData(recipients, i);
+            cout << endl;
+        }
+        i++;
     }
     getch();
 }
@@ -639,7 +645,7 @@ void saveAddressToATextFile (vector <User> &recipients, int i, int enteredID) {
     Sleep(1000);
 }
 
-int editRecipient(vector <User> &recipients) {
+int editRecipient(vector <User> &recipients, int extremeVariable) {
 
     int enteredID = 0;
     int sizeOfVector = recipients.size();
@@ -652,7 +658,7 @@ int editRecipient(vector <User> &recipients) {
 
     int i=0;
     while (i<sizeOfVector) {
-        if (enteredID == recipients[i].id) {
+        if ((enteredID == recipients[i].id)&&(recipients[i].userIDUser == extremeVariable)) {
             while (true) {
                 system("cls");
                 char choice;
@@ -679,7 +685,7 @@ int editRecipient(vector <User> &recipients) {
             }
         } else if ((enteredID != recipients[i].id)&&((howManyTimes)==sizeOfVector)) {
             cout << "Nie ma na liscie przyjaciela o takim ID!" << endl;
-            Sleep(1000);
+            getch();
         }
         i++;
         howManyTimes++;
@@ -687,7 +693,7 @@ int editRecipient(vector <User> &recipients) {
     return 0;
 }
 
-int removeRecipient(vector <User> &recipients) {
+int removeRecipient(vector <User> &recipients, int extremeVariable) {
     int enteredID = 0;
     int sizeOfVector = recipients.size();
     int howManyTimes = 1;
@@ -700,7 +706,7 @@ int removeRecipient(vector <User> &recipients) {
     file.close();
 
     while (i<sizeOfVector) {
-        if (enteredID == recipients[i].id) {
+        if ((enteredID == recipients[i].id)&&(recipients[i].userIDUser == extremeVariable)) {
             recipients.erase(recipients.begin() + i);
             sizeOfVector = recipients.size();
             file.open("ksiazkaAdresowaPrzyjaciol.txt", ios::out | ios::app);
