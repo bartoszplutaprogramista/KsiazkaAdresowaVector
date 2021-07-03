@@ -27,6 +27,8 @@ int signIn (vector <User> &recipients, vector <LoginPassword> &loginAndPasswordV
 
 //void signUpLoginPassword (vector <string> &login, vector <string> &password);
 
+void changePassword(vector <LoginPassword> &loginAndPasswordVec, int i);
+
 void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec);
 
 vector <User> splitData(vector <string> helpToLoad);
@@ -194,6 +196,7 @@ int signIn (vector <User> &recipients, vector <LoginPassword> &loginAndPasswordV
                 cout << "4. Wyswietl wszystkich adresatow" << endl;
                 cout << "5. Usun adresata" << endl;
                 cout << "6. Edytuj adresata" << endl;
+                cout << "7. Zmien haslo" << endl;
                 cout << "9. Wyloguj sie" << endl;
 
                 cin >> choice;
@@ -210,6 +213,8 @@ int signIn (vector <User> &recipients, vector <LoginPassword> &loginAndPasswordV
                     removeRecipient(recipients);
                 } else if (choice == '6') {
                     editRecipient(recipients);
+                } else if (choice == '7') {
+                    changePassword(loginAndPasswordVec, i);
                 } else if (choice == '9') {
                     cout << "Wylogowales sie" << endl;
                     getch();
@@ -225,6 +230,16 @@ int signIn (vector <User> &recipients, vector <LoginPassword> &loginAndPasswordV
         i++;
     }
     return 0;
+}
+
+void changePassword(vector <LoginPassword> &loginAndPasswordVec, int i){
+    string password;
+    cout << "Wprowadz nowe haslo: " << endl;
+    cin >> password;
+    loginAndPasswordVec[i].password = password;
+    cout << "Haslo zmieniono pomyslnie!" << endl;
+    saveUsersDataToATextFile (loginAndPasswordVec, i+1);
+    getch();
 }
 
 void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
