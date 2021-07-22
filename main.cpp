@@ -4,6 +4,8 @@
 #include <fstream>
 #include <cstdlib>
 #include <vector>
+#include <cstdio>
+#include <stdio.h>
 
 using namespace std;
 
@@ -23,7 +25,7 @@ vector <LoginPassword> loadUsersDataFromFile();
 
 void saveUsersDataToATextFile (vector <LoginPassword> loginAndPasswordVec, int extremeVariable);
 
-int signIn (vector <User> &recipients, vector <LoginPassword> &loginAndPasswordVec);
+int signIn (vector <LoginPassword> &loginAndPasswordVec);
 
 //void signUpLoginPassword (vector <string> &login, vector <string> &password);
 
@@ -31,9 +33,11 @@ void changePassword(vector <LoginPassword> &loginAndPasswordVec, int i);
 
 void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec);
 
-vector <User> splitData(vector <string> helpToLoad);
+vector <User> splitData(vector <string> helpToLoad, int extremeVariable);
 
-vector <User> loadDataFromFile();
+int splitDataToCheckWhetherUserIDEqualsLoggedUserId(string helpToSplitData, int extremeVariable);
+
+vector <User> loadDataFromFile(int extremeVariable);
 
 int saveAllData(vector <User> &recipients, int extremeVariable);
 
@@ -68,7 +72,7 @@ int main() {
 
     loginAndPasswordVec = loadUsersDataFromFile();
 
-    recipients = loadDataFromFile();
+//    recipients = loadDataFromFile();
 
     while(1) {
         system("cls");
@@ -79,7 +83,7 @@ int main() {
         cin >> choice;
 
         if(choice == '1') {
-            signIn(recipients, loginAndPasswordVec);
+            signIn(loginAndPasswordVec);
         } else if (choice == '2') {
 //            signUpLoginPassword(login, password);
             signUpLoginPassword(loginAndPasswordVec);
@@ -167,7 +171,7 @@ void saveUsersDataToATextFile (vector <LoginPassword> loginAndPasswordVec, int e
     file.close();
 }
 
-int signIn (vector <User> &recipients, vector <LoginPassword> &loginAndPasswordVec){
+int signIn (vector <LoginPassword> &loginAndPasswordVec){
     int x=0;
     while (x<loginAndPasswordVec.size()){
         cout << loginAndPasswordVec[x].login << endl;
@@ -185,7 +189,26 @@ int signIn (vector <User> &recipients, vector <LoginPassword> &loginAndPasswordV
         if ((login == loginAndPasswordVec[i].login) && (password == loginAndPasswordVec[i].password)){
             cout << "Istnieje uzytkownik o takim loginie i hasle. Zalogowano pomyslnie!" << endl;
             getch();
+            vector <User> recipients;
             int extremeVariable = i+1;
+            recipients = loadDataFromFile(extremeVariable);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            int rozmiarRecipients = recipients.size();
+            int x=0;
+            while (x<rozmiarRecipients){
+                cout << "ID: "<< recipients[x].id << endl;
+                cout << "ID UZYTKOWNIKA: "<< recipients[x].userIDUser << endl;
+                cout << "Imie: "<< recipients[x].name << endl;
+                cout << "Nazwisko: "<< recipients[x].surname << endl;
+                cout << "Numer Telefonu: "<< recipients[x].phoneNumber << endl;
+                cout << "E-mail: "<< recipients[x].eMail << endl;
+                cout << "Adres: "<< recipients[x].address << endl;
+                x++;
+                getch();
+            }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 //            saveUsersDataToATextFile(loginAndPasswordVec, extremeVariable);
             while(1) {
                 char choice;
@@ -224,7 +247,7 @@ int signIn (vector <User> &recipients, vector <LoginPassword> &loginAndPasswordV
         }else if((login != loginAndPasswordVec[i].login) && (password != loginAndPasswordVec[i].password) && (i == rozmiar-1)){
             cout << "Nieprawidlowy login lub haslo" << endl;
             getch();
-            signIn(recipients, loginAndPasswordVec);
+            signIn(loginAndPasswordVec);
             i++;
         }
         i++;
@@ -306,7 +329,7 @@ void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
         }
 }
 
-vector <User> splitData(vector <string> helpToLoad) {
+vector <User> splitData(vector <string> helpToLoad, int extremeVariable) {
     int sizeOfVector = helpToLoad.size();
     vector <User> helpToSeparate;
     for (int j=0; j<sizeOfVector; j++) {
@@ -348,24 +371,67 @@ vector <User> splitData(vector <string> helpToLoad) {
     return helpToSeparate;
 }
 
-vector <User> loadDataFromFile() {
+int splitDataToCheckWhetherUserIDEqualsLoggedUserId(string helpToSplitData, int extremeVariable) {
+        int helpToCheck = 0;
+        string result = "";
+        int i = 0;
+        string textToSeparate = helpToSplitData;
+        int textLength = textToSeparate.length();
+        int numberOfOccurrences = 0;
+        while (textLength>0) {
+            while (textToSeparate[i] != '|') {
+                result += textToSeparate[i];
+                i++;
+            }
+            numberOfOccurrences++;
+            if (numberOfOccurrences == 2) {
+                helpToCheck = atoi(result.c_str());
+                return helpToCheck;
+            }
+            cout << "Przed ERASE WYNOSI: " << textToSeparate << endl;
+            textToSeparate.erase(0,i+1);
+            cout << "PO ERASE WYNOSI: " << textToSeparate << endl;
+            textLength = textToSeparate.length();
+            i=0;
+            result = "";
+        }
+    return helpToCheck;
+}
+
+vector <User> loadDataFromFile(int extremeVariable) {
     User friends;
     fstream file;
     file.open("ksiazkaAdresowaPrzyjaciol.txt", ios::in);
     vector <string> helpToLoad;
     vector <User> separatedData;
+    int helpToCheck = 0;
+
+
+
     if (file.good()==true) {
+        string helpToSplitData;
         string line;
         int lineNumber=1;
+/*
         while(getline(file,line)) {
             helpToLoad.push_back(line);
             lineNumber++;
+*/
+
+        while(getline(file,line)) {
+            helpToSplitData = line;
+            helpToCheck = splitDataToCheckWhetherUserIDEqualsLoggedUserId(helpToSplitData, extremeVariable);
+            cout << "Zmienna help To Check wynosi: " << helpToCheck << endl;
+            if(helpToCheck==extremeVariable) {
+                helpToLoad.push_back(line);
+            }
+            lineNumber++;
         }
+
         file.close();
 
-        separatedData = splitData(helpToLoad);
+        separatedData = splitData(helpToLoad, extremeVariable);
     }
-
     return separatedData;
 }
 
