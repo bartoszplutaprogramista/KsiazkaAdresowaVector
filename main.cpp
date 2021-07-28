@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <fstream>
+#include <sstream>
 #include <cstdlib>
 #include <vector>
 #include <cstdio>
@@ -19,27 +20,29 @@ struct LoginPassword {
     string  login, password;
 };
 
+int splitDataToCheckWhetherIDRecipientInTextFileEqualsEditedIdOfRecipient(string helpToSplitData);
+
 vector <LoginPassword> splitDataUsersData(vector <string> helpToLoad);
 
 vector <LoginPassword> loadUsersDataFromFile();
 
-void saveUsersDataToATextFile (vector <LoginPassword> loginAndPasswordVec, int extremeVariable);
+void saveUsersDataToATextFile (vector <LoginPassword> loginAndPasswordVec, int numberOfLoggedUser);
 
 int signIn (vector <LoginPassword> &loginAndPasswordVec);
-
-//void signUpLoginPassword (vector <string> &login, vector <string> &password);
 
 void changePassword(vector <LoginPassword> &loginAndPasswordVec, int i);
 
 void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec);
 
-vector <User> splitData(vector <string> helpToLoad, int extremeVariable);
+vector <User> splitData(vector <string> helpToLoad, int numberOfLoggedUser);
 
-int splitDataToCheckWhetherUserIDEqualsLoggedUserId(string helpToSplitData, int extremeVariable);
+int splitDataToCheckWhetherUserIDEqualsLoggedUserId(string helpToSplitData);
 
-vector <User> loadDataFromFile(int extremeVariable);
+vector <User> loadDataFromFile(int numberOfLoggedUser);
 
-int saveAllData(vector <User> &recipients, int extremeVariable);
+int calculateID();
+
+int saveAllData(vector <User> &recipients, int numberOfLoggedUser);
 
 void displayData(vector <User> recipients, int i);
 
@@ -47,9 +50,13 @@ int searchByName (vector <User> recipients);
 
 int searchBySurname (vector <User> recipients);
 
-void displayAll(vector <User> recipients, int extremeVariable);
+void displayAll(vector <User> recipients, int numberOfLoggedUser);
 
 void saveDataToATextFile(vector <User> recipients);
+
+void renameTxtFile();
+
+void rewriteEditedDataAndFillInDataInTextFile(vector <User> recipients, int IdToEdit);
 
 void saveNameToATextFile (vector <User> &recipients, int i, int enteredID);
 
@@ -61,18 +68,21 @@ void saveeMailToATextFile (vector <User> &recipients, int i, int enteredID);
 
 void saveAddressToATextFile (vector <User> &recipients, int i, int enteredID);
 
-int editRecipient(vector <User> &recipients, int extremeVariable);
+int editRecipient(vector <User> &recipients, int numberOfLoggedUser);
 
-int removeRecipient(vector <User> &recipients, int extremeVariable);
+void rewriteFileAfterRemoving(int IdToEdit);
+
+void rewriteDataAfterRemovingRecipient(vector <User> recipients, int IdToEdit);
+
+int removeRecipient(vector <User> &recipients, int numberOfLoggedUser);
 
 int main() {
     vector <LoginPassword> loginAndPasswordVec;
     vector <User> recipients;
     char choice;
+    int enteredID = 0;
 
     loginAndPasswordVec = loadUsersDataFromFile();
-
-//    recipients = loadDataFromFile();
 
     while(1) {
         system("cls");
@@ -83,15 +93,39 @@ int main() {
         cin >> choice;
 
         if(choice == '1') {
-            signIn(loginAndPasswordVec);
+            enteredID = signIn(loginAndPasswordVec);
         } else if (choice == '2') {
-//            signUpLoginPassword(login, password);
             signUpLoginPassword(loginAndPasswordVec);
         } else if (choice == '3') {
             exit(0);
         }
     }
     return 0;
+}
+
+int splitDataToCheckWhetherIDRecipientInTextFileEqualsEditedIdOfRecipient(string helpToSplitData) {
+        int helpToCheck = 0;
+        string result = "";
+        int i = 0;
+        string textToSeparate = helpToSplitData;
+        int textLength = textToSeparate.length();
+        int numberOfOccurrences = 0;
+        while (textLength>0) {
+            while (textToSeparate[i] != '|') {
+                result += textToSeparate[i];
+                i++;
+            }
+            numberOfOccurrences++;
+            if (numberOfOccurrences == 1) {
+                helpToCheck = atoi(result.c_str());
+                return helpToCheck;
+            }
+            textToSeparate.erase(0,i+1);
+            textLength = textToSeparate.length();
+            i=0;
+            result = "";
+        }
+    return helpToCheck;
 }
 
 vector <LoginPassword> splitDataUsersData(vector <string> helpToLoad) {
@@ -148,7 +182,7 @@ vector <LoginPassword> loadUsersDataFromFile() {
     return separatedData;
 }
 
-void saveUsersDataToATextFile (vector <LoginPassword> loginAndPasswordVec, int extremeVariable){
+void saveUsersDataToATextFile (vector <LoginPassword> loginAndPasswordVec, int numberOfLoggedUser){
 
     ofstream file;
     int sizeOfLoginAndPasswordVec = loginAndPasswordVec.size();
@@ -173,6 +207,7 @@ void saveUsersDataToATextFile (vector <LoginPassword> loginAndPasswordVec, int e
 
 int signIn (vector <LoginPassword> &loginAndPasswordVec){
     int x=0;
+    int enteredID = 0;
     while (x<loginAndPasswordVec.size()){
         cout << loginAndPasswordVec[x].login << endl;
         x++;
@@ -190,26 +225,8 @@ int signIn (vector <LoginPassword> &loginAndPasswordVec){
             cout << "Istnieje uzytkownik o takim loginie i hasle. Zalogowano pomyslnie!" << endl;
             getch();
             vector <User> recipients;
-            int extremeVariable = i+1;
-            recipients = loadDataFromFile(extremeVariable);
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            int rozmiarRecipients = recipients.size();
-            int x=0;
-            while (x<rozmiarRecipients){
-                cout << "ID: "<< recipients[x].id << endl;
-                cout << "ID UZYTKOWNIKA: "<< recipients[x].userIDUser << endl;
-                cout << "Imie: "<< recipients[x].name << endl;
-                cout << "Nazwisko: "<< recipients[x].surname << endl;
-                cout << "Numer Telefonu: "<< recipients[x].phoneNumber << endl;
-                cout << "E-mail: "<< recipients[x].eMail << endl;
-                cout << "Adres: "<< recipients[x].address << endl;
-                x++;
-                getch();
-            }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//            saveUsersDataToATextFile(loginAndPasswordVec, extremeVariable);
+            int numberOfLoggedUser = i+1;
+            recipients = loadDataFromFile(numberOfLoggedUser);
             while(1) {
                 char choice;
                 system("cls");
@@ -225,23 +242,23 @@ int signIn (vector <LoginPassword> &loginAndPasswordVec){
                 cin >> choice;
 
                 if(choice == '1') {
-                    saveAllData(recipients, extremeVariable);
+                    saveAllData(recipients, numberOfLoggedUser);
                 } else if (choice == '2') {
                     searchByName(recipients);
                 } else if (choice == '3') {
                     searchBySurname(recipients);
                 } else if (choice == '4') {
-                    displayAll(recipients, extremeVariable);
+                    displayAll(recipients, numberOfLoggedUser);
                 } else if (choice == '5') {
-                    removeRecipient(recipients, extremeVariable);
+                    removeRecipient(recipients, numberOfLoggedUser);
                 } else if (choice == '6') {
-                    editRecipient(recipients, extremeVariable);
+                    enteredID = editRecipient(recipients, numberOfLoggedUser);
                 } else if (choice == '7') {
                     changePassword(loginAndPasswordVec, i);
                 } else if (choice == '9') {
                     cout << "Wylogowales sie" << endl;
                     getch();
-                    return 1;
+                    return 0;
                 }
             }
         }else if((login != loginAndPasswordVec[i].login) && (password != loginAndPasswordVec[i].password) && (i == rozmiar-1)){
@@ -252,7 +269,7 @@ int signIn (vector <LoginPassword> &loginAndPasswordVec){
         }
         i++;
     }
-    return 0;
+    return enteredID;
 }
 
 void changePassword(vector <LoginPassword> &loginAndPasswordVec, int i){
@@ -266,12 +283,9 @@ void changePassword(vector <LoginPassword> &loginAndPasswordVec, int i){
 }
 
 void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
-//        string login;
-//        string password;
-        int extremeVariable = 0;
+        int numberOfLoggedUser = 0;
         LoginPassword dataOfUsers;
         int sizeOfLoginAndPasswordVec = loginAndPasswordVec.size();
-        cout << "size login przed wejsciem: " << sizeOfLoginAndPasswordVec << endl;
         cout << "1. Podaj login: " << endl;
         cin >> dataOfUsers.login;
 
@@ -279,57 +293,35 @@ void signUpLoginPassword (vector <LoginPassword> &loginAndPasswordVec){
         while (i<sizeOfLoginAndPasswordVec){
             while (dataOfUsers.login==loginAndPasswordVec[i].login){
             cout << "Taki login juz istnieje wybierz inny!" << endl;
-//            signUpLoginPassword(loginAndPasswordVec);
             cout << "1. Podaj login: " << endl;
             cin >> dataOfUsers.login;
             }
             i++;
         }
-
-//        dataOfUsers.login = login;
-
         cout << "2. Podaj haslo: " << endl;
         cin >> dataOfUsers.password;
-//        dataOfUsers.password = password;
         dataOfUsers.userID = sizeOfLoginAndPasswordVec + 1;
-        cout << "dataOfUsers wynosi: " << dataOfUsers.userID << endl;
         getch();
         if (sizeOfLoginAndPasswordVec==0){
-            extremeVariable = 1;
+            numberOfLoggedUser = 1;
             loginAndPasswordVec.push_back(dataOfUsers);
             sizeOfLoginAndPasswordVec = loginAndPasswordVec.size();
-            cout << "Login z vectora wynosi: " << loginAndPasswordVec[0].login << endl;
-            cout << "size login: " << sizeOfLoginAndPasswordVec << endl;
-            saveUsersDataToATextFile(loginAndPasswordVec, extremeVariable);
+            saveUsersDataToATextFile(loginAndPasswordVec, numberOfLoggedUser);
         }
         else {
-            cout << "WSZEDLEM DO TEGO ELSA" << endl;
             i=0;
             while (i<sizeOfLoginAndPasswordVec){
                 if ((dataOfUsers.login!=loginAndPasswordVec[i].login)&&(i==sizeOfLoginAndPasswordVec-1)){
                     loginAndPasswordVec.push_back(dataOfUsers);
-                    extremeVariable++;
-                    saveUsersDataToATextFile(loginAndPasswordVec, extremeVariable);
-                    cout << "Login z vectora po wejsciu do ifa wynosi: " << loginAndPasswordVec[1].login << endl;
-                    getch();
+                    numberOfLoggedUser++;
+                    saveUsersDataToATextFile(loginAndPasswordVec, numberOfLoggedUser);
                 }
                 i++;
             }
         }
-        int j=0;
-        int rozmiar = loginAndPasswordVec.size();
-        if (rozmiar == 4){
-            while (j<rozmiar){
-                cout << "login " << j << " wynosi: " << loginAndPasswordVec[j].login << endl;
-                cout << "haslo " << j << " wynosi: " << loginAndPasswordVec[j].password << endl;
-                cout << "idUsera " << j << " wynosi: " << loginAndPasswordVec[j].userID << endl;
-                j++;
-            }
-            getch();
-        }
 }
 
-vector <User> splitData(vector <string> helpToLoad, int extremeVariable) {
+vector <User> splitData(vector <string> helpToLoad, int numberOfLoggedUser) {
     int sizeOfVector = helpToLoad.size();
     vector <User> helpToSeparate;
     for (int j=0; j<sizeOfVector; j++) {
@@ -367,11 +359,10 @@ vector <User> splitData(vector <string> helpToLoad, int extremeVariable) {
         }
         helpToSeparate.push_back(friends);
     }
-
     return helpToSeparate;
 }
 
-int splitDataToCheckWhetherUserIDEqualsLoggedUserId(string helpToSplitData, int extremeVariable) {
+int splitDataToCheckWhetherUserIDEqualsLoggedUserId(string helpToSplitData) {
         int helpToCheck = 0;
         string result = "";
         int i = 0;
@@ -388,9 +379,7 @@ int splitDataToCheckWhetherUserIDEqualsLoggedUserId(string helpToSplitData, int 
                 helpToCheck = atoi(result.c_str());
                 return helpToCheck;
             }
-            cout << "Przed ERASE WYNOSI: " << textToSeparate << endl;
             textToSeparate.erase(0,i+1);
-            cout << "PO ERASE WYNOSI: " << textToSeparate << endl;
             textLength = textToSeparate.length();
             i=0;
             result = "";
@@ -398,7 +387,7 @@ int splitDataToCheckWhetherUserIDEqualsLoggedUserId(string helpToSplitData, int 
     return helpToCheck;
 }
 
-vector <User> loadDataFromFile(int extremeVariable) {
+vector <User> loadDataFromFile(int numberOfLoggedUser) {
     User friends;
     fstream file;
     file.open("ksiazkaAdresowaPrzyjaciol.txt", ios::in);
@@ -406,36 +395,53 @@ vector <User> loadDataFromFile(int extremeVariable) {
     vector <User> separatedData;
     int helpToCheck = 0;
 
-
-
     if (file.good()==true) {
         string helpToSplitData;
         string line;
         int lineNumber=1;
-/*
-        while(getline(file,line)) {
-            helpToLoad.push_back(line);
-            lineNumber++;
-*/
-
         while(getline(file,line)) {
             helpToSplitData = line;
-            helpToCheck = splitDataToCheckWhetherUserIDEqualsLoggedUserId(helpToSplitData, extremeVariable);
-            cout << "Zmienna help To Check wynosi: " << helpToCheck << endl;
-            if(helpToCheck==extremeVariable) {
+            helpToCheck = splitDataToCheckWhetherUserIDEqualsLoggedUserId(helpToSplitData);
+            if(helpToCheck==numberOfLoggedUser) {
                 helpToLoad.push_back(line);
             }
             lineNumber++;
         }
-
-        file.close();
-
-        separatedData = splitData(helpToLoad, extremeVariable);
+        separatedData = splitData(helpToLoad, numberOfLoggedUser);
     }
+    else {
+        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        getch();
+    }
+    file.close();
     return separatedData;
 }
 
-int saveAllData(vector <User> &recipients, int extremeVariable) {
+int calculateID(){
+    int helpToID = 0;
+    fstream file;
+    file.open("ksiazkaAdresowaPrzyjaciol.txt", ios::in);
+    int helpToRewrite = 0;
+
+        if (file.good()==true) {
+            string helpToSplitData;
+            string line;
+            while(getline(file,line)) {
+                helpToSplitData = line;
+                helpToRewrite = splitDataToCheckWhetherIDRecipientInTextFileEqualsEditedIdOfRecipient(helpToSplitData);
+                if (helpToRewrite>helpToID){
+                    helpToID = helpToRewrite;
+                }
+            }
+        } else {
+            cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+            getch();
+        }
+    file.close();
+    return helpToID;
+}
+
+int saveAllData(vector <User> &recipients, int numberOfLoggedUser) {
     User friends;
     string name, surname, eMail, address, phoneNumber;
     cout << "Podaj imie: ";
@@ -452,12 +458,12 @@ int saveAllData(vector <User> &recipients, int extremeVariable) {
     getline(cin, address);
 
     int sizeOfVector = recipients.size();
-    if (sizeOfVector==0){
+    if (!(ifstream("ksiazkaAdresowaPrzyjaciol.txt"))){
         friends.id = 1;
     } else {
-        friends.id = recipients[sizeOfVector-1].id+1;
+        friends.id = calculateID()+1;
     }
-    friends.userIDUser = extremeVariable;
+    friends.userIDUser = numberOfLoggedUser;
     friends.name = name;
     friends.surname = surname;
     friends.phoneNumber = phoneNumber;
@@ -468,19 +474,19 @@ int saveAllData(vector <User> &recipients, int extremeVariable) {
 
     fstream file;
     file.open("ksiazkaAdresowaPrzyjaciol.txt", ios::out | ios::app);
-    if (file.good() == true) {
-        file<<recipients[sizeOfVector].id<<"|";
-        file<<recipients[sizeOfVector].userIDUser<<"|";
-        file<<recipients[sizeOfVector].name<<"|";
-        file<<recipients[sizeOfVector].surname<<"|";
-        file<<recipients[sizeOfVector].phoneNumber<<"|";
-        file<<recipients[sizeOfVector].eMail<<"|";
-        file<<recipients[sizeOfVector].address<<"|"<<endl;
-        file.close();
-    } else {
-        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
-        getch();
-    }
+
+        if (file.good() == true) {
+            file<<recipients[sizeOfVector].id<<"|";
+            file<<recipients[sizeOfVector].userIDUser<<"|";
+            file<<recipients[sizeOfVector].name<<"|";
+            file<<recipients[sizeOfVector].surname<<"|";
+            file<<recipients[sizeOfVector].phoneNumber<<"|";
+            file<<recipients[sizeOfVector].eMail<<"|";
+            file<<recipients[sizeOfVector].address<<"|"<<endl;
+        } else {
+            cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+            getch();
+            }
     cout << "Przyjaciel zapisany" << endl;
     Sleep(1000);
     return sizeOfVector;
@@ -559,15 +565,13 @@ int searchBySurname (vector <User> recipients) {
     }
 }
 
-void displayAll(vector <User> recipients, int extremeVariable) {
+void displayAll(vector <User> recipients, int numberOfLoggedUser) {
     system("cls");
     int sizeOfVector = recipients.size();
     int i=0;
-//    while ((recipients[extremeVariable-1].userIDUser == extremeVariable)&&(i<sizeOfVector)){
     while (i<sizeOfVector) {
-        if (recipients[i].userIDUser == extremeVariable){
+        if (recipients[i].userIDUser == numberOfLoggedUser){
             cout << "Dane przyjaciela: " << endl;
- //           displayData(recipients, i);
             displayData(recipients, i);
             cout << endl;
         }
@@ -576,31 +580,85 @@ void displayAll(vector <User> recipients, int extremeVariable) {
     getch();
 }
 
-void saveDataToATextFile(vector <User> recipients) {
-
-    ofstream file;
-    int sizeOfVector = recipients.size();
-    file.open("ksiazkaAdresowaPrzyjaciol.txt");
-    file.close();
-
-    file.open("ksiazkaAdresowaPrzyjaciol.txt", ios::out | ios::app);
-
-    if (file.good() == true) {
-        for (int j=0; j<sizeOfVector; j++) {
-            file<<recipients[j].id<<"|";
-            file<<recipients[j].userIDUser<<"|";
-            file<<recipients[j].name<<"|";
-            file<<recipients[j].surname<<"|";
-            file<<recipients[j].phoneNumber<<"|";
-            file<<recipients[j].eMail<<"|";
-            file<<recipients[j].address<<"|"<<endl;
-        }
+void deleteTxtFile(){
+    char path[] = "ksiazkaAdresowaPrzyjaciol.txt";
+    int remove(const char *path);
+    if( remove( path ) == -1 ){
+      cout << "Could not delete " << path;
+      getch();
     } else {
-        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        cout << "Deleted " << path << endl;
         getch();
     }
+}
 
-    file.close();
+void renameTxtFile(){
+    int result;
+    char oldname[] = "ksiazkaAdresowaPrzyjaciol_tymczasowy.txt", newname[] = "ksiazkaAdresowaPrzyjaciol.txt";
+    result = rename(oldname, newname);
+    if( result != 0 ){
+      cout << "Could not rename" << oldname << endl;
+      getch();
+    }else {
+      cout << "File " << oldname << " renamed " << newname << endl;
+      getch();
+    }
+}
+
+void rewriteEditedDataAndFillInDataInTextFile(vector <User> recipients, int IdToEdit){
+    fstream file;
+    ofstream file_temporary;
+    file_temporary.open("ksiazkaAdresowaPrzyjaciol_tymczasowy.txt");
+    file_temporary.close();
+    file.open("ksiazkaAdresowaPrzyjaciol.txt", ios::in);
+    file_temporary.open("ksiazkaAdresowaPrzyjaciol_tymczasowy.txt", ios::out | ios::app);
+    int helpToRewrite = 0;
+
+        if (file.good()==true) {
+            string helpToSplitData;
+            string line;
+            int helpToCheck = 0;
+            int numberOfIDLastLine = 0;
+            int howManyTimes=0;
+            while(getline(file,line)) {
+                helpToSplitData = line;
+                helpToRewrite = splitDataToCheckWhetherIDRecipientInTextFileEqualsEditedIdOfRecipient(helpToSplitData);
+                helpToCheck = splitDataToCheckWhetherUserIDEqualsLoggedUserId(helpToSplitData);
+                numberOfIDLastLine = calculateID();
+                if(helpToRewrite!=IdToEdit) {
+                    if (file_temporary.good() == true) {
+                            file_temporary << helpToSplitData << endl;
+                        } else {
+                        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+                        getch();
+                        }
+                }else{
+                    if (file_temporary.good() == true){
+                        file_temporary <<recipients[howManyTimes].id <<"|";
+                        file_temporary << recipients[howManyTimes].userIDUser <<"|";
+                        file_temporary << recipients[howManyTimes].name <<"|";
+                        file_temporary << recipients[howManyTimes].surname <<"|";
+                        file_temporary << recipients[howManyTimes].phoneNumber <<"|";
+                        file_temporary << recipients[howManyTimes].eMail <<"|";
+                        file_temporary << recipients[howManyTimes].address <<"|"<<endl;
+                    }else {
+                        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+                        getch();
+                    }
+                }
+                if (helpToCheck == recipients[0].userIDUser){
+                    howManyTimes++;
+                }
+            }
+        }else {
+            cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+            getch();
+            }
+            file_temporary.close();
+            file.close();
+
+    deleteTxtFile();
+    renameTxtFile();
 }
 
 void saveNameToATextFile (vector <User> &recipients, int i, int enteredID) {
@@ -619,7 +677,7 @@ void saveNameToATextFile (vector <User> &recipients, int i, int enteredID) {
     friends.address = recipients[i].address;
 
     recipients[i] = friends;
-    saveDataToATextFile(recipients);
+    rewriteEditedDataAndFillInDataInTextFile(recipients, enteredID);
     cout << "Pomyslnie Zmodyfikowano Dane Przyjaciela!" << endl;
     Sleep(1000);
 }
@@ -640,7 +698,7 @@ void saveSurnameToATextFile (vector <User> &recipients, int i, int enteredID) {
     friends.address = recipients[i].address;
 
     recipients[i] = friends;
-    saveDataToATextFile(recipients);
+    rewriteEditedDataAndFillInDataInTextFile(recipients, enteredID);
     cout << "Pomyslnie Zmodyfikowano Dane Przyjaciela!" << endl;
     Sleep(1000);
 }
@@ -661,7 +719,7 @@ void savePhoneNumberToATextFile (vector <User> &recipients, int i, int enteredID
     friends.address = recipients[i].address;
 
     recipients[i] = friends;
-    saveDataToATextFile(recipients);
+    rewriteEditedDataAndFillInDataInTextFile(recipients, enteredID);
     cout << "Pomyslnie Zmodyfikowano Dane Przyjaciela!" << endl;
     Sleep(1000);
 }
@@ -682,7 +740,7 @@ void saveeMailToATextFile (vector <User> &recipients, int i, int enteredID) {
     friends.address = recipients[i].address;
 
     recipients[i] = friends;
-    saveDataToATextFile(recipients);
+    rewriteEditedDataAndFillInDataInTextFile(recipients, enteredID);
     cout << "Pomyslnie Zmodyfikowano Dane Przyjaciela!" << endl;
     Sleep(1000);
 }
@@ -706,12 +764,12 @@ void saveAddressToATextFile (vector <User> &recipients, int i, int enteredID) {
     friends.eMail = recipients[i].eMail;
 
     recipients[i] = friends;
-    saveDataToATextFile(recipients);
+    rewriteEditedDataAndFillInDataInTextFile(recipients, enteredID);
     cout << "Pomyslnie Zmodyfikowano Dane Przyjaciela!" << endl;
     Sleep(1000);
 }
 
-int editRecipient(vector <User> &recipients, int extremeVariable) {
+int editRecipient(vector <User> &recipients, int numberOfLoggedUser) {
 
     int enteredID = 0;
     int sizeOfVector = recipients.size();
@@ -724,7 +782,7 @@ int editRecipient(vector <User> &recipients, int extremeVariable) {
 
     int i=0;
     while (i<sizeOfVector) {
-        if ((enteredID == recipients[i].id)&&(recipients[i].userIDUser == extremeVariable)) {
+        if ((enteredID == recipients[i].id)&&(recipients[i].userIDUser == numberOfLoggedUser)) {
             while (true) {
                 system("cls");
                 char choice;
@@ -756,10 +814,47 @@ int editRecipient(vector <User> &recipients, int extremeVariable) {
         i++;
         howManyTimes++;
     }
-    return 0;
+    return enteredID;
 }
 
-int removeRecipient(vector <User> &recipients, int extremeVariable) {
+void rewriteDataAfterRemovingRecipient(vector <User> recipients, int IdToEdit){
+    fstream file;
+    ofstream file_temporary;
+    file_temporary.open("ksiazkaAdresowaPrzyjaciol_tymczasowy.txt");
+    file_temporary.close();
+    file.open("ksiazkaAdresowaPrzyjaciol.txt", ios::in);
+    file_temporary.open("ksiazkaAdresowaPrzyjaciol_tymczasowy.txt", ios::out | ios::app);
+    int helpToRewrite = 0;
+
+        if (file.good()==true) {
+            string helpToSplitData;
+            string line;
+            int howManyTimes=0;
+            int numberOfIDLastLine=0;
+            while(getline(file,line)) {
+                helpToSplitData = line;
+                helpToRewrite = splitDataToCheckWhetherIDRecipientInTextFileEqualsEditedIdOfRecipient(helpToSplitData);
+                numberOfIDLastLine = calculateID();
+                if(helpToRewrite!=IdToEdit) {
+                    if (file_temporary.good() == true) {
+                            file_temporary << helpToSplitData<<endl;
+                    } else {
+                        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+                        getch();
+                    }
+                }
+            }
+            file_temporary.close();
+            file.close();
+    }else {
+        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        getch();
+    }
+    deleteTxtFile();
+    renameTxtFile();
+}
+
+int removeRecipient(vector <User> &recipients, int numberOfLoggedUser) {
     int enteredID = 0;
     int sizeOfVector = recipients.size();
     int howManyTimes = 1;
@@ -767,30 +862,13 @@ int removeRecipient(vector <User> &recipients, int extremeVariable) {
     cout << "Wprowadz ID przyjaciela do skasowania: " << endl;
     cin >> enteredID;
 
-    ofstream file;
-    file.open("ksiazkaAdresowaPrzyjaciol.txt");
-    file.close();
-
     while (i<sizeOfVector) {
-        if ((enteredID == recipients[i].id)&&(recipients[i].userIDUser == extremeVariable)) {
+        if (enteredID == recipients[i].id) {
             recipients.erase(recipients.begin() + i);
             sizeOfVector = recipients.size();
-            file.open("ksiazkaAdresowaPrzyjaciol.txt", ios::out | ios::app);
-            if (file.good() == true) {
-                for (int j=0; j<sizeOfVector; j++) {
-                    file<<recipients[j].id<<"|";
-                    file<<recipients[j].userIDUser<<"|";
-                    file<<recipients[j].name<<"|";
-                    file<<recipients[j].surname<<"|";
-                    file<<recipients[j].phoneNumber<<"|";
-                    file<<recipients[j].eMail<<"|";
-                    file<<recipients[j].address<<"|"<<endl;
-                }
-                file.close();
-            } else {
-                cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
-                getch();
-            }
+
+            rewriteDataAfterRemovingRecipient(recipients, enteredID);
+
             cout << "Pomyslnie Skasowano Dane Przyjaciela!" << endl;
             Sleep(1000);
             return 0;
