@@ -54,6 +54,8 @@ void displayAll(vector <User> recipients, int numberOfLoggedUser);
 
 void saveDataToATextFile(vector <User> recipients);
 
+void deleteTxtFile();
+
 void renameTxtFile();
 
 void rewriteEditedDataAndFillInDataInTextFile(vector <User> recipients, int IdToEdit);
@@ -586,9 +588,6 @@ void deleteTxtFile(){
     if( remove( path ) == -1 ){
       cout << "Could not delete " << path;
       getch();
-    } else {
-        cout << "Deleted " << path << endl;
-        getch();
     }
 }
 
@@ -598,9 +597,6 @@ void renameTxtFile(){
     result = rename(oldname, newname);
     if( result != 0 ){
       cout << "Could not rename" << oldname << endl;
-      getch();
-    }else {
-      cout << "File " << oldname << " renamed " << newname << endl;
       getch();
     }
 }
@@ -663,20 +659,12 @@ void rewriteEditedDataAndFillInDataInTextFile(vector <User> recipients, int IdTo
 
 void saveNameToATextFile (vector <User> &recipients, int i, int enteredID) {
     string name;
-    User friends;
 
     cout << "Wprowadz imie: ";
     cin >> name;
-    friends.name = name;
 
-    friends.id = enteredID;
-    friends.userIDUser = recipients[i].userIDUser;
-    friends.surname = recipients[i].surname;
-    friends.phoneNumber = recipients[i].phoneNumber;
-    friends.eMail = recipients[i].eMail;
-    friends.address = recipients[i].address;
+    recipients[i].name = name;
 
-    recipients[i] = friends;
     rewriteEditedDataAndFillInDataInTextFile(recipients, enteredID);
     cout << "Pomyslnie Zmodyfikowano Dane Przyjaciela!" << endl;
     Sleep(1000);
@@ -684,20 +672,11 @@ void saveNameToATextFile (vector <User> &recipients, int i, int enteredID) {
 
 void saveSurnameToATextFile (vector <User> &recipients, int i, int enteredID) {
     string surname;
-    User friends;
 
     cout << "Wprowadz nazwisko: ";
     cin >> surname;
-    friends.surname = surname;
 
-    friends.id = enteredID;
-    friends.userIDUser = recipients[i].userIDUser;
-    friends.name = recipients[i].name;
-    friends.phoneNumber = recipients[i].phoneNumber;
-    friends.eMail = recipients[i].eMail;
-    friends.address = recipients[i].address;
-
-    recipients[i] = friends;
+    recipients[i].surname = surname;
     rewriteEditedDataAndFillInDataInTextFile(recipients, enteredID);
     cout << "Pomyslnie Zmodyfikowano Dane Przyjaciela!" << endl;
     Sleep(1000);
@@ -705,20 +684,11 @@ void saveSurnameToATextFile (vector <User> &recipients, int i, int enteredID) {
 
 void savePhoneNumberToATextFile (vector <User> &recipients, int i, int enteredID) {
     string phoneNumber;
-    User friends;
 
     cout << "Wprowadz numer Telefonu: ";
     cin >> phoneNumber;
-    friends.phoneNumber = phoneNumber;
 
-    friends.id = enteredID;
-    friends.userIDUser = recipients[i].userIDUser;
-    friends.name = recipients[i].name;
-    friends.surname = recipients[i].surname;
-    friends.eMail = recipients[i].eMail;
-    friends.address = recipients[i].address;
-
-    recipients[i] = friends;
+    recipients[i].phoneNumber = phoneNumber;
     rewriteEditedDataAndFillInDataInTextFile(recipients, enteredID);
     cout << "Pomyslnie Zmodyfikowano Dane Przyjaciela!" << endl;
     Sleep(1000);
@@ -726,20 +696,11 @@ void savePhoneNumberToATextFile (vector <User> &recipients, int i, int enteredID
 
 void saveeMailToATextFile (vector <User> &recipients, int i, int enteredID) {
     string eMail;
-    User friends;
 
     cout << "Wprowadz eMail: ";
     cin >> eMail;
-    friends.eMail = eMail;
 
-    friends.id = enteredID;
-    friends.userIDUser = recipients[i].userIDUser;
-    friends.name = recipients[i].name;
-    friends.surname = recipients[i].surname;
-    friends.phoneNumber = recipients[i].phoneNumber;
-    friends.address = recipients[i].address;
-
-    recipients[i] = friends;
+    recipients[i].eMail = eMail;
     rewriteEditedDataAndFillInDataInTextFile(recipients, enteredID);
     cout << "Pomyslnie Zmodyfikowano Dane Przyjaciela!" << endl;
     Sleep(1000);
@@ -747,23 +708,13 @@ void saveeMailToATextFile (vector <User> &recipients, int i, int enteredID) {
 
 void saveAddressToATextFile (vector <User> &recipients, int i, int enteredID) {
     string address;
-    User friends;
 
     cin.clear();
     cin.sync();
     cout << "Wprowadz adres: ";
     getline(cin, address);
 
-    friends.address = address;
-
-    friends.id = enteredID;
-    friends.userIDUser = recipients[i].userIDUser;
-    friends.name = recipients[i].name;
-    friends.surname = recipients[i].surname;
-    friends.phoneNumber = recipients[i].phoneNumber;
-    friends.eMail = recipients[i].eMail;
-
-    recipients[i] = friends;
+    recipients[i].address = address;
     rewriteEditedDataAndFillInDataInTextFile(recipients, enteredID);
     cout << "Pomyslnie Zmodyfikowano Dane Przyjaciela!" << endl;
     Sleep(1000);
